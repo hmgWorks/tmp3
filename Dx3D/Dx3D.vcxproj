@@ -81,6 +81,8 @@
     <None Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asciitok.h" />
+    <ClInclude Include="cAseLoader.h" />
     <ClInclude Include="cCamera.h" />
     <ClInclude Include="cCircleRHW.h" />
     <ClInclude Include="cCube.h" />
@@ -101,6 +103,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cAseLoader.cpp" />
     <ClCompile Include="cCamera.cpp" />
     <ClCompile Include="cCircleRHW.cpp" />
     <ClCompile Include="cCube.cpp" />

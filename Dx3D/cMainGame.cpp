@@ -9,7 +9,7 @@
 #include "iMap.h"
 #include "cIndexCube.h"
 #include "cMtlTex.h"
-
+#include "cAseLoader.h"
 
 cMainGame::cMainGame(void)
 	: m_pGrid(NULL)
@@ -86,6 +86,8 @@ void cMainGame::Setup()
 
 #pragma endregion
 
+	cAseLoader aseLoader;
+	aseLoader.Load("../../Resources/ase/woman/", "woman_01_all.ASE");
 
 	m_pGrid = new cGrid;
 	m_pGrid->Setup(30, 1.0f);
