@@ -6,20 +6,25 @@ class cGeometryObj;
 class cAseLoader
 {
 private:
-	FILE*					m_pFile;
-	std::string				m_strFolder;
-	char					m_cstrToken[1024];
+	FILE*							m_pFile;
+	std::string						m_strFolder;
+	char							m_cstrToken[1024];
 	
-	int						m_nLevel;
-	int						m_nMtlId;
-	std::vector<cMtlTex*>	m_vecMtlTex;
+	int								m_nLevel;
+	int								m_nMtlId;
+	std::vector<cMtlTex*>			m_vecMtlTex;
 
-	cGeometryObj*			m_pGeometryObj;
-	cMeshObj*				m_pNode;
-	cMeshObj*				m_pPrentNode;
-	std::string				m_strParentName;
+	cGeometryObj*					m_pGeometryObj;
+	cMeshObj*						m_pNode;
+	cMeshObj*						m_pPrentNode;
+	std::string						m_strParentName;
 
-	
+	std::vector<D3DXVECTOR3>		m_vecV;
+	std::vector<D3DXVECTOR2>		m_vecVT;
+	std::vector<D3DXVECTOR3>		m_vecVN;
+
+	std::vector<std::vector<int>>	m_vecVF;
+	std::vector<std::vector<int>>	m_vecVTF;
 
 public:
 	cAseLoader();
@@ -38,5 +43,8 @@ public:
 	void GeometryProc();
 	void NodeTMProc(D3DXVECTOR3& row0, D3DXVECTOR3& row1, D3DXVECTOR3& row2, D3DXVECTOR3& row3);
 	void MeshProc();
+	void MeshVertexListProc();
+	void MeshFaceListProc();
+	void MeshTVertListProc();
 };
 

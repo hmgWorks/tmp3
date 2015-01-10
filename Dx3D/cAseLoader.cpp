@@ -43,8 +43,13 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 				MaterialListPorc();
 			}
 			else if (IsEqual(cstrToken, ID_GEOMETRY))
-			{
+			{				
 				m_pNode = new cMeshObj;
+				m_vecV.clear();
+				m_vecVT.clear();
+				m_vecVN.clear();
+				m_vecVF.clear();
+				m_vecVTF.clear();
 
 				GeometryProc();
 				m_pGeometryObj->AddChild(m_strParentName, m_pNode);				
@@ -240,33 +245,35 @@ void cAseLoader::GeometryProc()
 		}
 		else if (IsEqual(ch, ID_NODE_TM))
 		{
-			D3DXVECTOR3 row0, row1, row2, row3;
-			
+			D3DXVECTOR3 row0, row1, row2, row3;			
 			NodeTMProc(row0, row1, row2, row3);
 
 			//ÆÄ½ÌÇØ¼­ ¹ÞÀº µ¥ÀÌÅÍ´Â ¿ùµå Æ®·»½ºÆû
 			//W * inverse(PW) = L * PW * inverse(PW)
-			D3DXMATRIXA16 matLocal;
-			D3DXMATRIXA16 matWorld = D3DXMATRIXA16(
+			D3DXMATRIXA16 matLocalTM, matWorldTM;
+			D3DXMATRIXA16 matPWorldTM, matInversePWorldTM;
+			matWorldTM = D3DXMATRIXA16(
 				row0.x, row0.y, row0.z, 1.0f,
 				row1.x, row1.y, row1.z, 1.0f,
 				row2.x, row2.y, row2.z, 1.0f,
 				row3.x, row3.y, row3.z, 1.0f
 				);
+			m_pNode->SetWorldMatrix(matWorldTM);
+
 			if (m_pPrentNode == NULL)
 			{
-				D3DXMATRIXA16 mat, i_mat;
+				D3DXMATRIXA16 mat;
 				D3DXMatrixIdentity(&mat);
-				D3DXMatrixInverse(&i_mat, NULL, &mat);
-				matLocal = matWorld * i_mat;
+				D3DXMatrixInverse(&matInversePWorldTM, NULL, &mat);
 			}
 			else
 			{
-
-				
+				matPWorldTM = m_pPrentNode->GetWorldMatrix();
+				D3DXMatrixInverse(&matInversePWorldTM, NULL, &matPWorldTM);				
 			}
-			/*D3DXMATRIXA16 matLocal;
-			D3DXMatrixInverse(&matLocal, NULL, &matWorld);*/
+
+			matLocalTM = matWorldTM * matInversePWorldTM;
+			m_pNode->SetLocalMatrix(matLocalTM);
 		}
 		else if (IsEqual(ch, ID_MESH))
 		{
@@ -332,10 +339,103 @@ void cAseLoader::MeshProc()
 		{
 			nLevelNum--;
 		}
-		//else if (IsEqual(ch, /*ID_TM_ROW0*/))
-		//{
+		else if (IsEqual(ch, ID_MESH_VERTEX_LIST))
+		{
+			MeshVertexListProc();
+		}
+		else if (IsEqual(ch, ID_MESH_FACE_LIST))
+		{
+			MeshFaceListProc();
+		}
+		else if (IsEqual(ch, ID_MESH_TVERTLIST))
+		{
+			MeshTVertListProc();
+		}
+	} while (nLevelNum > 0);
+}
 
-		//}	
+void cAseLoader::MeshVertexListProc()
+{
+	int nLevelNum = 0;
+	do
+	{
+		char* ch = GetToken();
+		if (IsEqual(ch, "{"))
+		{
+			nLevelNum++;
+		}
+		else if (IsEqual(ch, "}"))
+		{
+			nLevelNum--;
+		}
+		else if (IsEqual(ch, ID_MESH_VERTEX))
+		{			
+			float x = 0.0f, y = 0.0f, z = 0.0f;
+			GetToken();
+			x = (float)atof(GetToken());
+			z = (float)atof(GetToken());
+			y = (float)atof(GetToken());
+			
+			m_vecV.push_back(D3DXVECTOR3(x, y, z));
+		}
+	} while (nLevelNum > 0);
+}
 
+void cAseLoader::MeshFaceListProc()
+{
+	int nLevelNum = 0;
+	do
+	{
+		char* ch = GetToken();
+		if (IsEqual(ch, "{"))
+		{
+			nLevelNum++;
+		}
+		else if (IsEqual(ch, "}"))
+		{
+			nLevelNum--;
+		}
+		else if (IsEqual(ch, ID_MESH_FACE))
+		{
+			std::vector<int> index;
+			index.clear();
+			index.resize(3);
+
+			GetToken();//id:
+			GetToken();//A:
+			index[0] = atoi(GetToken());
+			GetToken();//B:
+			index[2] = atoi(GetToken());
+			GetToken();//C:
+			index[1] = atoi(GetToken());
+			
+			m_vecVF.push_back(index);
+		}
+	} while (nLevelNum > 0);
+}
+
+void cAseLoader::MeshTVertListProc()
+{
+	int nLevelNum = 0;
+	do
+	{
+		char* ch = GetToken();
+		if (IsEqual(ch, "{"))
+		{
+			nLevelNum++;
+		}
+		else if (IsEqual(ch, "}"))
+		{
+			nLevelNum--;
+		}
+		else if (IsEqual(ch, ID_MESH_TVERT))
+		{
+			float u = 0.0f, v = 0.0f;
+			GetToken();//pass
+			u = (float)atof(GetToken());
+			v = (float)atof(GetToken());
+
+			m_vecVT.push_back(D3DXVECTOR2(u, 1.0f - v));
+		}
 	} while (nLevelNum > 0);
 }

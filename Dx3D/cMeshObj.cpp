@@ -77,18 +77,17 @@ void cMeshObj::Delete()
 		delete	this;
 }
 
-void cMeshObj::SetWorldMatrix(D3DXMATRIXA16& matWorld)
-{
-	if (GetNodeName() == "root")
-	{
-		//this->SetLocalMatrix();
-	}
-	m_matWorld = matWorld;
-	
-
+void cMeshObj::SetWorldMatrix(D3DXMATRIX mat)
+{	
+	m_matWorld = mat;
 }
 
-void cMeshObj::SetLocalMatrix(D3DXMATRIX matLocal)
+D3DXMATRIXA16& cMeshObj::GetWorldMatrix()
 {
-	m_matLocal = matLocal;
+	return m_matWorld;
+}
+
+void cMeshObj::SetLocalMatrix(D3DXMATRIX mat)
+{
+	m_matLocal = mat;
 }
