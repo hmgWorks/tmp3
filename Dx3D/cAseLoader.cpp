@@ -50,8 +50,27 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 				m_vecVN.clear();
 				m_vecVF.clear();
 				m_vecVTF.clear();
+				
+				m_nMtlId = -1;//mtl ref id가없으면 바패드이다.
 
 				GeometryProc();
+				
+				std::vector<ST_PNT_VERTEX> vecVertex;
+				if (m_nMtlId != -1)
+				{
+					ST_PNT_VERTEX v;
+					for (int i = 0,k = 0; i < m_vecVF.size(); i++)
+					{
+						for (int j = 0; j < 3; j++,k++)
+						{
+							v.p = m_vecV[m_vecVF[i][j]];
+							v.t = m_vecVT[m_vecVTF[i][j]];
+							v.n = m_vecVN[k];
+							vecVertex.push_back(v);
+						}
+					}
+					m_pNode->Setup();
+				}
 				m_pGeometryObj->AddChild(m_strParentName, m_pNode);				
 			}
 			/*OutputDebugString(cstrToken);
@@ -279,7 +298,15 @@ void cAseLoader::GeometryProc()
 		{
 			MeshProc();
 		}
-		
+		else if (IsEqual(ch, ID_TM_ANIMATION))
+		{
+			SkipProc();
+		}
+		else if (IsEqual(ch, ID_MATERIAL_REF))
+		{
+			m_nMtlId = atoi(GetToken());
+		}
+
 	} while (nLevelNum > 0);
 }
 
@@ -350,6 +377,14 @@ void cAseLoader::MeshProc()
 		else if (IsEqual(ch, ID_MESH_TVERTLIST))
 		{
 			MeshTVertListProc();
+		}
+		else if (IsEqual(ch, ID_MESH_TFACELIST))
+		{
+			MeshTFaceListProc();
+		}
+		else if (IsEqual(ch, ID_MESH_NORMALS))
+		{
+			MeshTNormalsProc();
 		}
 	} while (nLevelNum > 0);
 }
@@ -437,5 +472,69 @@ void cAseLoader::MeshTVertListProc()
 
 			m_vecVT.push_back(D3DXVECTOR2(u, 1.0f - v));
 		}
+		
+	} while (nLevelNum > 0);
+}
+
+void cAseLoader::MeshTFaceListProc()
+{
+	int nLevelNum = 0;
+	do
+	{
+		char* ch = GetToken();
+		if (IsEqual(ch, "{"))
+		{
+			nLevelNum++;
+		}
+		else if (IsEqual(ch, "}"))
+		{
+			nLevelNum--;
+		}
+		else if (IsEqual(ch, ID_MESH_TFACE))
+		{
+			std::vector<int> vtf;
+			vtf.clear();
+			vtf.resize(3);
+
+			GetToken();//pass
+			vtf[0] = atoi(GetToken());
+			vtf[2] = atoi(GetToken());
+			vtf[1] = atoi(GetToken());
+
+			m_vecVTF.push_back(vtf);
+		}
+
+	} while (nLevelNum > 0);
+}
+
+void cAseLoader::MeshTNormalsProc()
+{
+	int nLevelNum = 0;
+	do
+	{
+		char* ch = GetToken();
+		if (IsEqual(ch, "{"))
+		{
+			nLevelNum++;
+		}
+		else if (IsEqual(ch, "}"))
+		{
+			nLevelNum--;
+		}
+		else if (IsEqual(ch, ID_MESH_VERTEXNORMAL))
+		{
+			D3DXVECTOR3 v;
+			float x = 0.0f, y = 0.0f, z = 0.0f;
+			GetToken();//pass
+			x = (float)atof(GetToken());
+			z = (float)atof(GetToken());
+			y = (float)atof(GetToken());
+
+			v = D3DXVECTOR3(x, y, z);
+			D3DXVec3Normalize(&v, &v);
+
+			m_vecVN.push_back(v);
+		}
+
 	} while (nLevelNum > 0);
 }

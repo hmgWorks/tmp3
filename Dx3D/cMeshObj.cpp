@@ -14,6 +14,11 @@ cMeshObj::~cMeshObj()
 	SAFE_RELEASE(m_pMesh);
 }
 
+void cMeshObj::Setup(std::vector<ST_PNT_VERTEX>& vecVertex, cMtlTex* mtltex)
+{
+
+}
+
 void cMeshObj::AddChild(std::string nodeName, cMeshObj* node)
 {
 	if (GetNodeName() == nodeName)

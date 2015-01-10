@@ -37,14 +37,19 @@ public:
 
 	void SkipProc();
 	void SceneProc();
+
 	void MaterialListPorc();
 	void MaterialPorc();
 	void MapDiffusePorc();
+	
 	void GeometryProc();
 	void NodeTMProc(D3DXVECTOR3& row0, D3DXVECTOR3& row1, D3DXVECTOR3& row2, D3DXVECTOR3& row3);
 	void MeshProc();
 	void MeshVertexListProc();
 	void MeshFaceListProc();
 	void MeshTVertListProc();
+	void MeshTFaceListProc();
+	void MeshTNormalsProc();
+	
 };
 

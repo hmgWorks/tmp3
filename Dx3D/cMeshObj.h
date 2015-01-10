@@ -22,7 +22,7 @@ public:
 	void SetWorldMatrix(D3DXMATRIX mat);
 	D3DXMATRIXA16& GetWorldMatrix();
 	void SetLocalMatrix(D3DXMATRIX mat);
-	void Setup();
+	void Setup(std::vector<ST_PNT_VERTEX>& vecVertex, cMtlTex* mtltex);
 	void Delete();
 };
 
