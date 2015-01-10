@@ -56,9 +56,9 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 				GeometryProc();
 				
 				std::vector<ST_PNT_VERTEX> vecVertex;
+				ST_PNT_VERTEX v;
 				if (m_nMtlId != -1)
 				{
-					ST_PNT_VERTEX v;
 					for (int i = 0,k = 0; i < m_vecVF.size(); i++)
 					{
 						for (int j = 0; j < 3; j++,k++)
@@ -69,7 +69,21 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 							vecVertex.push_back(v);
 						}
 					}
-					m_pNode->Setup();
+					m_pNode->Setup(vecVertex,m_vecMtlTex[m_nMtlId]);
+				}
+				else
+				{
+					for (int i = 0, k = 0; i < m_vecVF.size(); i++)
+					{
+						for (int j = 0; j < 3; j++, k++)
+						{
+							v.p = m_vecV[m_vecVF[i][j]];
+							v.t = D3DXVECTOR2(0, 0);
+							v.n = m_vecVN[k];
+							vecVertex.push_back(v);
+						}
+					}
+					m_pNode->Setup(vecVertex);
 				}
 				m_pGeometryObj->AddChild(m_strParentName, m_pNode);				
 			}
@@ -99,7 +113,7 @@ char* cAseLoader::GetToken()
 
 	while (char ch = fgetc(m_pFile))
 	{		
-		if (ch < 33 && !isQuote)
+		if (ch < 33 && !isQuote && nReadCount != 0)
 		{			
 			break;
 		}
@@ -108,10 +122,11 @@ char* cAseLoader::GetToken()
 			isQuote = !isQuote;
 			continue;
 		}
+		if (nReadCount == 0 && ch < 33)
+			continue;
+
 		m_cstrToken[nReadCount++] = ch;
 	}
-	//if (nReadCount == 0)
-	//	return " ";// GetToken();
 
 	m_cstrToken[nReadCount] = '\0';
 	return m_cstrToken;
@@ -435,7 +450,6 @@ void cAseLoader::MeshFaceListProc()
 			std::vector<int> index;
 			index.clear();
 			index.resize(3);
-
 			GetToken();//id:
 			GetToken();//A:
 			index[0] = atoi(GetToken());

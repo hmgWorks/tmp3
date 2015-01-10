@@ -12,6 +12,15 @@ cGeometryObj::~cGeometryObj()
 	m_pRoot->Delete();
 }
 
+void cGeometryObj::Setup()
+{
+
+}
+
+void cGeometryObj::Render()
+{
+	m_pRoot->Render();
+}
 
 void cGeometryObj::SetRoot(cMeshObj* root)
 {	

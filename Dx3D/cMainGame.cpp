@@ -161,6 +161,7 @@ void cMainGame::Render()
 	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);
 	m_pGrid->Render();
 
+	m_pGeometryObj->Render();
 //	//D3DXMATRIXA16 matWorld;
 //	//D3DXMatrixIdentity(&matWorld);
 //	//g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
