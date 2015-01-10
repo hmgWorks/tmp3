@@ -7,13 +7,19 @@ class cAseLoader
 {
 private:
 	FILE*					m_pFile;
+	std::string				m_strFolder;
 	char					m_cstrToken[1024];
+	
 	int						m_nLevel;
 	int						m_nMtlId;
 	std::vector<cMtlTex*>	m_vecMtlTex;
-	std::string				m_strFolder;
+
 	cGeometryObj*			m_pGeometryObj;
+	cMeshObj*				m_pNode;
+	cMeshObj*				m_pPrentNode;
 	std::string				m_strParentName;
+
+	
 
 public:
 	cAseLoader();
@@ -29,8 +35,8 @@ public:
 	void MaterialListPorc();
 	void MaterialPorc();
 	void MapDiffusePorc();
-	void GeometryProc(cMeshObj* meshObj);
-	void NodeTMProc();
+	void GeometryProc();
+	void NodeTMProc(D3DXVECTOR3& row0, D3DXVECTOR3& row1, D3DXVECTOR3& row2, D3DXVECTOR3& row3);
 	void MeshProc();
 };
 

@@ -13,5 +13,7 @@ public:
 
 	void SetRoot(cMeshObj* root);
 	void AddChild(std::string nodeName, cMeshObj* child);
+	cMeshObj* GetNode(std::string nodeName);
+	void SetWorldMatrix(D3DXMATRIXA16& matWordl);
 };
 

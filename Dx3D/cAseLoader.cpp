@@ -10,12 +10,15 @@ cAseLoader::cAseLoader()
 	, m_nMtlId(-1)
 	, m_pGeometryObj(NULL)
 	, m_strParentName("root")
+	, m_pNode(NULL)
+	, m_pPrentNode(NULL)
 {
 	memset(m_cstrToken, 0, sizeof(m_cstrToken));
 }
 
 cAseLoader::~cAseLoader()
 {
+	
 }
 
 //인자는 수정 할거
@@ -41,9 +44,10 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 			}
 			else if (IsEqual(cstrToken, ID_GEOMETRY))
 			{
-				cMeshObj* meshObj = new cMeshObj;
-				GeometryProc(meshObj);
-				m_pGeometryObj->AddChild(m_strParentName, meshObj);
+				m_pNode = new cMeshObj;
+
+				GeometryProc();
+				m_pGeometryObj->AddChild(m_strParentName, m_pNode);				
 			}
 			/*OutputDebugString(cstrToken);
 			OutputDebugString("\n");*/
@@ -54,6 +58,7 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 	{
 		SAFE_RELEASE(p);
 	}
+//	int n = 0;
 }
 
 void cAseLoader::Load(cGeometryObj* geometryhObj, const char* sFolder, const char* sFileName)
@@ -209,7 +214,7 @@ void cAseLoader::MapDiffusePorc()
 	} while (nLevelNum > 0);
 }
 
-void cAseLoader::GeometryProc(cMeshObj* meshObj)
+void cAseLoader::GeometryProc()
 {
 	m_strParentName = "root";
 	int nLevelNum = 0;
@@ -226,15 +231,42 @@ void cAseLoader::GeometryProc(cMeshObj* meshObj)
 		}
 		else if (IsEqual(ch, ID_NODE_NAME))
 		{
-			meshObj->SetNodeName(GetToken());			
+			m_pNode->SetNodeName(GetToken());
 		}
 		else if (IsEqual(ch, ID_NODE_PARENT))
 		{
 			m_strParentName = std::string(GetToken());
+			m_pPrentNode = m_pGeometryObj->GetNode(m_strParentName);
 		}
 		else if (IsEqual(ch, ID_NODE_TM))
 		{
-			NodeTMProc();
+			D3DXVECTOR3 row0, row1, row2, row3;
+			
+			NodeTMProc(row0, row1, row2, row3);
+
+			//파싱해서 받은 데이터는 월드 트렌스폼
+			//W * inverse(PW) = L * PW * inverse(PW)
+			D3DXMATRIXA16 matLocal;
+			D3DXMATRIXA16 matWorld = D3DXMATRIXA16(
+				row0.x, row0.y, row0.z, 1.0f,
+				row1.x, row1.y, row1.z, 1.0f,
+				row2.x, row2.y, row2.z, 1.0f,
+				row3.x, row3.y, row3.z, 1.0f
+				);
+			if (m_pPrentNode == NULL)
+			{
+				D3DXMATRIXA16 mat, i_mat;
+				D3DXMatrixIdentity(&mat);
+				D3DXMatrixInverse(&i_mat, NULL, &mat);
+				matLocal = matWorld * i_mat;
+			}
+			else
+			{
+
+				
+			}
+			/*D3DXMATRIXA16 matLocal;
+			D3DXMatrixInverse(&matLocal, NULL, &matWorld);*/
 		}
 		else if (IsEqual(ch, ID_MESH))
 		{
@@ -244,7 +276,7 @@ void cAseLoader::GeometryProc(cMeshObj* meshObj)
 	} while (nLevelNum > 0);
 }
 
-void cAseLoader::NodeTMProc()
+void cAseLoader::NodeTMProc(D3DXVECTOR3& row0, D3DXVECTOR3& row1, D3DXVECTOR3& row2, D3DXVECTOR3& row3)
 {
 	int nLevelNum = 0;
 	do
@@ -259,32 +291,28 @@ void cAseLoader::NodeTMProc()
 			nLevelNum--;
 		}
 		else if (IsEqual(ch, ID_TM_ROW0))
-		{
-			D3DXVECTOR3 v;
-			v.x = (float)atof(GetToken());
-			v.y = (float)atof(GetToken());
-			v.z = (float)atof(GetToken());
+		{			
+			row0.x = (float)atof(GetToken());
+			row0.z = (float)atof(GetToken());
+			row0.y = (float)atof(GetToken());
 		}
 		else if (IsEqual(ch, ID_TM_ROW1))
 		{
-			D3DXVECTOR3 v;
-			v.x = (float)atof(GetToken());
-			v.y = (float)atof(GetToken());
-			v.z = (float)atof(GetToken());
+			row2.x = (float)atof(GetToken());
+			row2.z = (float)atof(GetToken());
+			row2.y = (float)atof(GetToken());
 		}
 		else if (IsEqual(ch, ID_TM_ROW2))
 		{
-			D3DXVECTOR3 v;
-			v.x = (float)atof(GetToken());
-			v.y = (float)atof(GetToken());
-			v.z = (float)atof(GetToken());
+			row1.x = (float)atof(GetToken());
+			row1.z = (float)atof(GetToken());
+			row1.y = (float)atof(GetToken());
 		}
 		else if (IsEqual(ch, ID_TM_ROW3))
 		{
-			D3DXVECTOR3 v;
-			v.x = (float)atof(GetToken());
-			v.y = (float)atof(GetToken());
-			v.z = (float)atof(GetToken());
+			row3.x = (float)atof(GetToken());
+			row3.z = (float)atof(GetToken());
+			row3.y = (float)atof(GetToken());
 		}
 
 	} while (nLevelNum > 0);
@@ -304,10 +332,10 @@ void cAseLoader::MeshProc()
 		{
 			nLevelNum--;
 		}
-		else if (IsEqual(ch, /*ID_TM_ROW0*/))
-		{
+		//else if (IsEqual(ch, /*ID_TM_ROW0*/))
+		//{
 
-		}	
+		//}	
 
 	} while (nLevelNum > 0);
 }

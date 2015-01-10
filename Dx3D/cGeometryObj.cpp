@@ -33,3 +33,13 @@ void cGeometryObj::AddChild(std::string nodeName, cMeshObj* child)
 
 	m_pRoot->AddChild(nodeName, child);
 }
+
+void cGeometryObj::SetWorldMatrix(D3DXMATRIXA16& matWordl)
+{	
+	m_pRoot->SetWorldMatrix(matWordl);
+}
+
+cMeshObj* cGeometryObj::GetNode(std::string nodeName)
+{
+	return m_pRoot->GetNode(nodeName);
+}

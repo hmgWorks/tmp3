@@ -33,6 +33,26 @@ void cMeshObj::AddChild(std::string nodeName, cMeshObj* node)
 	}
 }
 
+cMeshObj* cMeshObj::GetNode(std::string nodeName)
+{
+	if (GetNodeName() == nodeName)
+	{
+		return this;
+	}
+	else if (!m_vecChild.empty())
+	{
+		for (auto p : m_vecChild)
+		{
+			return p->GetNode(nodeName);
+		}
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+
 std::string cMeshObj::GetNodeName()
 {
 	return m_strNodeName;
@@ -55,4 +75,20 @@ void cMeshObj::Delete()
 		}
 	}	
 		delete	this;
+}
+
+void cMeshObj::SetWorldMatrix(D3DXMATRIXA16& matWorld)
+{
+	if (GetNodeName() == "root")
+	{
+		//this->SetLocalMatrix();
+	}
+	m_matWorld = matWorld;
+	
+
+}
+
+void cMeshObj::SetLocalMatrix(D3DXMATRIX matLocal)
+{
+	m_matLocal = matLocal;
 }
