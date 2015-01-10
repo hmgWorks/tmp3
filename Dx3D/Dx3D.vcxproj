@@ -88,10 +88,12 @@
     <ClInclude Include="cCube.h" />
     <ClInclude Include="cCubeMan.h" />
     <ClInclude Include="cDeviceManager.h" />
+    <ClInclude Include="cGeometryObj.h" />
     <ClInclude Include="cGrid.h" />
     <ClInclude Include="cGroup.h" />
     <ClInclude Include="cIndexCube.h" />
     <ClInclude Include="cMainGame.h" />
+    <ClInclude Include="cMeshObj.h" />
     <ClInclude Include="cMtlTex.h" />
     <ClInclude Include="cObject.h" />
     <ClInclude Include="cObjLoader.h" />
@@ -109,10 +111,12 @@
     <ClCompile Include="cCube.cpp" />
     <ClCompile Include="cCubeMan.cpp" />
     <ClCompile Include="cDeviceManager.cpp" />
+    <ClCompile Include="cGeometryObj.cpp" />
     <ClCompile Include="cGrid.cpp" />
     <ClCompile Include="cGroup.cpp" />
     <ClCompile Include="cIndexCube.cpp" />
     <ClCompile Include="cMainGame.cpp" />
+    <ClCompile Include="cMeshObj.cpp" />
     <ClCompile Include="cMtlTex.cpp" />
     <ClCompile Include="cObject.cpp" />
     <ClCompile Include="cObjLoader.cpp" />

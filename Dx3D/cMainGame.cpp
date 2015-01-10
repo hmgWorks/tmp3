@@ -10,6 +10,7 @@
 #include "cIndexCube.h"
 #include "cMtlTex.h"
 #include "cAseLoader.h"
+#include "cGeometryObj.h"
 
 cMainGame::cMainGame(void)
 	: m_pGrid(NULL)
@@ -19,12 +20,14 @@ cMainGame::cMainGame(void)
 	, m_pMap(NULL)
 	, m_pIndexCube(NULL)
 	, m_pMesh(NULL)
+	, m_pGeometryObj(NULL)
 {
 }
 
 
 cMainGame::~cMainGame(void)
 {
+	SAFE_DELETE(m_pGeometryObj);
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pCubeMan);
@@ -86,8 +89,9 @@ void cMainGame::Setup()
 
 #pragma endregion
 
+	m_pGeometryObj = new cGeometryObj;
 	cAseLoader aseLoader;
-	aseLoader.Load("../../Resources/ase/woman/", "woman_01_all.ASE");
+	aseLoader.Load(m_pGeometryObj, "../../Resources/ase/woman/", "woman_01_all.ASE");
 
 	m_pGrid = new cGrid;
 	m_pGrid->Setup(30, 1.0f);
@@ -140,7 +144,7 @@ void cMainGame::Update()
 {
 	m_pCubeMan->Update(m_pMap);
 	m_pCamera->Update();
-	OutputDebugString("ASDF\n");
+	//OutputDebugString("ASDF\n");
 }
 
 void cMainGame::Render()

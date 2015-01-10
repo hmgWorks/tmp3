@@ -84,6 +84,12 @@
     <ClInclude Include="Asciitok.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="cGeometryObj.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cMeshObj.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -135,6 +141,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="cAseLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cGeometryObj.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cMeshObj.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
