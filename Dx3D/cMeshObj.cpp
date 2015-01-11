@@ -14,7 +14,7 @@ cMeshObj::~cMeshObj()
 	SAFE_RELEASE(m_pMesh);
 }
 
-void cMeshObj::Setup(std::vector<ST_PNT_VERTEX>& vecVertex, cMtlTex* mtltex)
+void cMeshObj::Setup(std::vector<ST_PNT_VERTEX> vecVertex, cMtlTex* mtltex)
 {
 	if (mtltex != NULL)
 	{
@@ -66,9 +66,16 @@ void cMeshObj::Setup(std::vector<ST_PNT_VERTEX>& vecVertex, cMtlTex* mtltex)
 
 void cMeshObj::Render()
 {
-	g_pD3DDevice->SetTexture(0, m_pMtlTex->pTex);
-	g_pD3DDevice->SetMaterial(&m_pMtlTex->stMtl);
-	m_pMesh->DrawSubset(0);
+	if (m_pMtlTex != NULL)
+	{
+		D3DXMATRIXA16 mat;
+		D3DXMatrixIdentity(&mat);
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
+		g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+		g_pD3DDevice->SetTexture(0, m_pMtlTex->pTex);
+		g_pD3DDevice->SetMaterial(&m_pMtlTex->stMtl);
+		m_pMesh->DrawSubset(0);
+	}
 	if (!m_vecChild.empty())
 	{
 		for (auto p : m_vecChild)

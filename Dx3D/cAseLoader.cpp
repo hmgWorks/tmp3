@@ -111,8 +111,9 @@ char* cAseLoader::GetToken()
 	memset(m_cstrToken, 0, sizeof(m_cstrToken));	
 	int nReadCount = 0;
 
-	while (char ch = fgetc(m_pFile))
-	{		
+	while (!feof(m_pFile))
+	{
+		char ch = fgetc(m_pFile);
 		if (ch < 33 && !isQuote && nReadCount != 0)
 		{			
 			break;
@@ -270,7 +271,8 @@ void cAseLoader::GeometryProc()
 		}
 		else if (IsEqual(ch, ID_NODE_NAME))
 		{
-			m_pNode->SetNodeName(GetToken());
+			char* strNodeName = GetToken();
+			m_pNode->SetNodeName(strNodeName);
 		}
 		else if (IsEqual(ch, ID_NODE_PARENT))
 		{
@@ -537,17 +539,36 @@ void cAseLoader::MeshTNormalsProc()
 		}
 		else if (IsEqual(ch, ID_MESH_VERTEXNORMAL))
 		{
-			D3DXVECTOR3 v;
-			float x = 0.0f, y = 0.0f, z = 0.0f;
+			D3DXVECTOR3 v0,v1,v2;
+			float x0 = 0.0f, y0 = 0.0f, z0 = 0.0f;
+			float x1 = 0.0f, y1 = 0.0f, z1 = 0.0f;
+			float x2 = 0.0f, y2 = 0.0f, z2 = 0.0f;
 			GetToken();//pass
-			x = (float)atof(GetToken());
-			z = (float)atof(GetToken());
-			y = (float)atof(GetToken());
+			x0 = (float)atof(GetToken());
+			z0 = (float)atof(GetToken());
+			y0 = (float)atof(GetToken());
+			v0 = D3DXVECTOR3(x0, y0, z0);
 
-			v = D3DXVECTOR3(x, y, z);
-			D3DXVec3Normalize(&v, &v);
+			GetToken();//mesh vertex noraml
+			GetToken();//pass
+			x2 = (float)atof(GetToken());
+			z2 = (float)atof(GetToken());
+			y2 = (float)atof(GetToken());
+			v2 = D3DXVECTOR3(x2, y2, z2);
 
-			m_vecVN.push_back(v);
+			GetToken();//mesh vertex noraml
+			GetToken();//pass
+			x1 = (float)atof(GetToken());
+			z1 = (float)atof(GetToken());
+			y1 = (float)atof(GetToken());
+			v1 = D3DXVECTOR3(x1, y1, z1);
+			D3DXVec3Normalize(&v0, &v0);
+			D3DXVec3Normalize(&v1, &v1);
+			D3DXVec3Normalize(&v2, &v2);
+
+			m_vecVN.push_back(v0);
+			m_vecVN.push_back(v1);
+			m_vecVN.push_back(v2);
 		}
 
 	} while (nLevelNum > 0);

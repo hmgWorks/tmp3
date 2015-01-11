@@ -15,7 +15,7 @@ public:
 	cMeshObj();
 	~cMeshObj();
 
-	void Setup(std::vector<ST_PNT_VERTEX>& vecVertex, cMtlTex* mtltex = NULL);
+	void Setup(std::vector<ST_PNT_VERTEX> vecVertex, cMtlTex* mtltex = NULL);
 	void Render();
 	void Delete();
 
