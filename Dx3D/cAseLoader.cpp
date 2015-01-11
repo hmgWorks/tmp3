@@ -56,6 +56,8 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 				GeometryProc();
 				
 				std::vector<ST_PNT_VERTEX> vecVertex;
+				vecVertex.clear();
+
 				ST_PNT_VERTEX v;
 				if (m_nMtlId != -1)
 				{
@@ -66,6 +68,9 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 							v.p = m_vecV[m_vecVF[i][j]];
 							v.t = m_vecVT[m_vecVTF[i][j]];
 							v.n = m_vecVN[k];
+
+							D3DXVec3TransformCoord(&v.p, &v.p, &matLocalTM);
+							D3DXVec3TransformCoord(&v.n, &v.n, &matLocalTM);
 							vecVertex.push_back(v);
 						}
 					}
@@ -80,15 +85,17 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 							v.p = m_vecV[m_vecVF[i][j]];
 							v.t = D3DXVECTOR2(0, 0);
 							v.n = m_vecVN[k];
+							
+							D3DXVec3TransformCoord(&v.p, &v.p, &matLocalTM);
+							D3DXVec3TransformCoord(&v.n, &v.n, &matLocalTM);
 							vecVertex.push_back(v);
 						}
-					}
+					}					
 					m_pNode->Setup(vecVertex);
 				}
 				m_pGeometryObj->AddChild(m_strParentName, m_pNode);				
 			}
-			/*OutputDebugString(cstrToken);
-			OutputDebugString("\n");*/
+
 		}
 	}
 	fclose(m_pFile);
@@ -285,13 +292,12 @@ void cAseLoader::GeometryProc()
 			NodeTMProc(row0, row1, row2, row3);
 
 			//ÆÄ½ÌÇØ¼­ ¹ÞÀº µ¥ÀÌÅÍ´Â ¿ùµå Æ®·»½ºÆû
-			//W * inverse(PW) = L * PW * inverse(PW)
-			D3DXMATRIXA16 matLocalTM, matWorldTM;
-			D3DXMATRIXA16 matPWorldTM, matInversePWorldTM;
+			//W * inverse(PW) = L * PW * inverse(PW)			
+
 			matWorldTM = D3DXMATRIXA16(
-				row0.x, row0.y, row0.z, 1.0f,
-				row1.x, row1.y, row1.z, 1.0f,
-				row2.x, row2.y, row2.z, 1.0f,
+				row0.x, row0.y, row0.z, 0.0f,
+				row1.x, row1.y, row1.z, 0.0f,
+				row2.x, row2.y, row2.z, 0.0f,
 				row3.x, row3.y, row3.z, 1.0f
 				);
 			m_pNode->SetWorldMatrix(matWorldTM);
@@ -300,15 +306,17 @@ void cAseLoader::GeometryProc()
 			{
 				D3DXMATRIXA16 mat;
 				D3DXMatrixIdentity(&mat);
-				D3DXMatrixInverse(&matInversePWorldTM, NULL, &mat);
+				//D3DXMatrixTranslation(&mat, 0, 1, 0);
+				D3DXMatrixInverse(&matInversePWorldTM, 0, &mat);
 			}
 			else
 			{
 				matPWorldTM = m_pPrentNode->GetWorldMatrix();
-				D3DXMatrixInverse(&matInversePWorldTM, NULL, &matPWorldTM);				
+				D3DXMatrixInverse(&matInversePWorldTM, 0, &matPWorldTM);
 			}
-
+			//matLocalTM = matInversePWorldTM * matWorldTM;
 			matLocalTM = matWorldTM * matInversePWorldTM;
+
 			m_pNode->SetLocalMatrix(matLocalTM);
 		}
 		else if (IsEqual(ch, ID_MESH))

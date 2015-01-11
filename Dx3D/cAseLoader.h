@@ -26,6 +26,9 @@ private:
 	std::vector<std::vector<int>>	m_vecVF;
 	std::vector<std::vector<int>>	m_vecVTF;
 
+	D3DXMATRIXA16 matLocalTM, matWorldTM;
+	D3DXMATRIXA16 matPWorldTM, matInversePWorldTM;
+
 public:
 	cAseLoader();
 	~cAseLoader();

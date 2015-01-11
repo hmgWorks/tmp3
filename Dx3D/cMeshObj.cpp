@@ -71,8 +71,11 @@ void cMeshObj::Render()
 		D3DXMATRIXA16 mat;
 		D3DXMatrixIdentity(&mat);
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
+		//g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matLocal);
+		//g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorld);
 		g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
-		g_pD3DDevice->SetTexture(0, m_pMtlTex->pTex);
+		//g_pD3DDevice->SetTexture(0, m_pMtlTex->pTex);
+		g_pD3DDevice->SetTexture(0, NULL);
 		g_pD3DDevice->SetMaterial(&m_pMtlTex->stMtl);
 		m_pMesh->DrawSubset(0);
 	}
@@ -152,7 +155,7 @@ void cMeshObj::SetWorldMatrix(D3DXMATRIX mat)
 	m_matWorld = mat;
 }
 
-D3DXMATRIXA16& cMeshObj::GetWorldMatrix()
+D3DXMATRIXA16 cMeshObj::GetWorldMatrix()
 {
 	return m_matWorld;
 }

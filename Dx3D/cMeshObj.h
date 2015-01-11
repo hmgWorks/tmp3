@@ -24,7 +24,7 @@ public:
 	std::string GetNodeName();
 	void SetNodeName(char* nodeName);
 	void SetWorldMatrix(D3DXMATRIX mat);
-	D3DXMATRIXA16& GetWorldMatrix();
+	D3DXMATRIXA16 GetWorldMatrix();
 	void SetLocalMatrix(D3DXMATRIX mat);
 };
 
