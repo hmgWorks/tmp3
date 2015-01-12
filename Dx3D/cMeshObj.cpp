@@ -5,7 +5,9 @@
 cMeshObj::cMeshObj()
 	:m_pMesh(NULL)
 	, m_pMtlTex(NULL)
+	
 {
+	D3DXVec3Normalize(&m_vPosintion, &m_vPosintion);
 }
 
 cMeshObj::~cMeshObj()
@@ -63,19 +65,42 @@ void cMeshObj::Setup(std::vector<ST_PNT_VERTEX> vecVertex, cMtlTex* mtltex)
 		D3DXMESHOPT_VERTEXCACHE,
 		&vecAdjBuffer[0], 0, 0, 0);
 }
+void cMeshObj::Update(D3DXMATRIXA16* matPWorld /*= NULL*/)
+{
+	if (matPWorld != NULL)
+	{
+		D3DXMATRIXA16 mat,mat2;
+		D3DXMatrixInverse(&mat, NULL, matPWorld);
+		m_matLocal = m_matAse* mat;
+		m_matWorld = m_matLocal *(*matPWorld);// *(*matPWorld);		
+		//m_matWorld = (*matPWorld)* m_matLocal;// *(*matPWorld);		
+		//m_matAse = m_matWorld;
+		//자식의 월드 = 자식의 로컬 
+		//m_matLocal = m_matLocal* (*matPWorld);
 
+		//D3DXMatrixTranslation(&mat2, 0, 0, 0.03f);
+		//m_matWorld = m_matWorld* (*matPWorld);
+		//m_matWorld = m_matWorld*mat2;
+	}
+	if (!m_vecChild.empty())
+	{
+		for (auto p : m_vecChild)
+			p->Update(&m_matWorld);
+	}
+}
 void cMeshObj::Render()
 {
 	if (m_pMtlTex != NULL)
 	{
-		D3DXMATRIXA16 mat;
-		D3DXMatrixIdentity(&mat);
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
+		
+		//D3DXMATRIXA16 m_matWorld;
+		//D3DXMatrixIdentity(&m_matWorld);
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorld);
 		//g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matLocal);
 		//g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorld);
-		g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
-		//g_pD3DDevice->SetTexture(0, m_pMtlTex->pTex);
-		g_pD3DDevice->SetTexture(0, NULL);
+		//g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+		g_pD3DDevice->SetTexture(0, m_pMtlTex->pTex);
+		//g_pD3DDevice->SetTexture(0, NULL);
 		g_pD3DDevice->SetMaterial(&m_pMtlTex->stMtl);
 		m_pMesh->DrawSubset(0);
 	}
@@ -152,7 +177,7 @@ void cMeshObj::SetNodeName(char* nodeName)
 
 void cMeshObj::SetWorldMatrix(D3DXMATRIX mat)
 {	
-	m_matWorld = mat;
+	m_matAse = mat;
 }
 
 D3DXMATRIXA16 cMeshObj::GetWorldMatrix()

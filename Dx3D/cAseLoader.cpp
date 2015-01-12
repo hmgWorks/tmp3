@@ -69,8 +69,8 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 							v.t = m_vecVT[m_vecVTF[i][j]];
 							v.n = m_vecVN[k];
 
-							D3DXVec3TransformCoord(&v.p, &v.p, &matLocalTM);
-							D3DXVec3TransformCoord(&v.n, &v.n, &matLocalTM);
+							D3DXVec3TransformCoord(&v.p, &v.p, &m_matInverseWorldTM);
+							D3DXVec3TransformNormal(&v.n, &v.n, &m_matInverseWorldTM);
 							vecVertex.push_back(v);
 						}
 					}
@@ -86,8 +86,8 @@ void cAseLoader::Load(cGeometryObj* geometryhObj, std::string& sFolder, std::str
 							v.t = D3DXVECTOR2(0, 0);
 							v.n = m_vecVN[k];
 							
-							D3DXVec3TransformCoord(&v.p, &v.p, &matLocalTM);
-							D3DXVec3TransformCoord(&v.n, &v.n, &matLocalTM);
+							D3DXVec3TransformCoord(&v.p, &v.p, &m_matInverseWorldTM);
+							D3DXVec3TransformNormal(&v.n, &v.n, &m_matInverseWorldTM);
 							vecVertex.push_back(v);
 						}
 					}					
@@ -294,30 +294,31 @@ void cAseLoader::GeometryProc()
 			//파싱해서 받은 데이터는 월드 트렌스폼
 			//W * inverse(PW) = L * PW * inverse(PW)			
 
-			matWorldTM = D3DXMATRIXA16(
+			m_matWorldTM = D3DXMATRIXA16(
 				row0.x, row0.y, row0.z, 0.0f,
 				row1.x, row1.y, row1.z, 0.0f,
 				row2.x, row2.y, row2.z, 0.0f,
 				row3.x, row3.y, row3.z, 1.0f
 				);
-			m_pNode->SetWorldMatrix(matWorldTM);
-
-			if (m_pPrentNode == NULL)
+			m_pNode->SetWorldMatrix(m_matWorldTM);//월드 현재의 로컬화된 버택스에 적용하면 모댈이 와성
+			D3DXMatrixInverse(&m_matInverseWorldTM, 0, &m_matWorldTM);//버택스를 로컬화 시킨다.
+			//m_pNode->SetLocalMatrix(m_matInverseWorldTM);//로컬로 만드는 로컬로 만드는 트랜스폼
+			/*if (m_pPrentNode == NULL)
 			{
 				D3DXMATRIXA16 mat;
 				D3DXMatrixIdentity(&mat);
-				//D3DXMatrixTranslation(&mat, 0, 1, 0);
-				D3DXMatrixInverse(&matInversePWorldTM, 0, &mat);
+				D3DXMatrixTranslation(&mat, 0, 1, 0);
+				D3DXMatrixInverse(&m_matInversePWorldTM, 0, &mat);
 			}
 			else
 			{
-				matPWorldTM = m_pPrentNode->GetWorldMatrix();
-				D3DXMatrixInverse(&matInversePWorldTM, 0, &matPWorldTM);
-			}
+				m_matPWorldTM = m_pPrentNode->GetWorldMatrix();
+				D3DXMatrixInverse(&m_matInversePWorldTM, 0, &m_matPWorldTM);
+			}*/
 			//matLocalTM = matInversePWorldTM * matWorldTM;
-			matLocalTM = matWorldTM * matInversePWorldTM;
+			//m_matLocalTM = m_matWorldTM * m_matInversePWorldTM;
 
-			m_pNode->SetLocalMatrix(matLocalTM);
+			//m_pNode->SetLocalMatrix(m_matInverseWorldTM);
 		}
 		else if (IsEqual(ch, ID_MESH))
 		{

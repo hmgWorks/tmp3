@@ -101,7 +101,9 @@ void cMainGame::Setup()
 
 	m_pCamera = new cCamera;
 	m_pCamera->Setup();
-	m_pCamera->SetTarget(&m_pCubeMan->GetPosition());
+	//m_pCamera->SetTarget(&m_pCubeMan->GetPosition());
+	D3DXVECTOR3 a = D3DXVECTOR3(0, 0, 0);
+	m_pCamera->SetTarget(&a);
 
 	//폰트 생성
 	D3DXFONT_DESC fd;
@@ -143,6 +145,7 @@ void cMainGame::Setup()
 void cMainGame::Update()
 {
 	m_pCubeMan->Update(m_pMap);
+	m_pGeometryObj->Update();
 	m_pCamera->Update();
 	//OutputDebugString("ASDF\n");
 }

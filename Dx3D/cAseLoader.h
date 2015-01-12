@@ -26,8 +26,8 @@ private:
 	std::vector<std::vector<int>>	m_vecVF;
 	std::vector<std::vector<int>>	m_vecVTF;
 
-	D3DXMATRIXA16 matLocalTM, matWorldTM;
-	D3DXMATRIXA16 matPWorldTM, matInversePWorldTM;
+	D3DXMATRIXA16 m_matLocalTM, m_matWorldTM, m_matInverseWorldTM;
+	D3DXMATRIXA16 m_matPWorldTM, m_matInversePWorldTM;
 
 public:
 	cAseLoader();
